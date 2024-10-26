@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar System Explorer</title>
+    <style>
+        /* Space-Themed Colors and Fonts */
+        :root {
+            --primary-color: #FF3D3D;
+            --hover-color: #e03535;
+            --background-overlay: rgba(0, 0, 0, 0.7);
+            --font-family: 'Orbitron', sans-serif;
+            --text-color: #d3d3d3; /* Softer off-white color for text */
+        }
+
+        /* Background Styling */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: var(--font-family);
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            background: url('backgroundlanding.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Dark Overlay */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6); /* Adjust transparency for brightness */
+            z-index: -1;
+        }
+
+        /* Container Styling */
+        .container {
+            background: var(--background-overlay);
+            padding: 30px 40px;
+            border-radius: 15px;
+            width: 50%; /* Increase width to make it wider */
+            max-width: 700px; /* Increase max-width for larger screens */
+            margin-left: 50px;
+            text-align: left;
+            position: relative;
+            z-index: 1; /* Ensure container is above the overlay */
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            text-shadow: 0px 0px 5px rgba(255, 61, 61, 0.5); /* Reduced intensity for elegance */
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            color: var(--text-color); /* Softer text color */
+            line-height: 1.5;
+            font-weight: 300; /* Lighter font weight for a refined look */
+        }
+
+        /* Button Styling */
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding-bottom: 20px; /* Added padding to avoid cut-off */
+        }
+
+        .button {
+            padding: 15px 25px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: white;
+            background-color: rgb(42, 101, 120);
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            box-shadow: 0 4px 15px rgba(100, 61, 61, 0.4);
+            text-align: center;
+        }
+
+        .button:hover {
+            background-color: var(--hover-color);
+        }
+
+    </style>
+
+    <!-- Link to Orbitron font for a futuristic look -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Solar System Explorer</h1>
+        <p>Embark on a journey through our solar system, discover the planets, and explore the mysteries of the cosmos.</p>
+        
+        <div class="button-container">
+            <button class="button" onclick="startJourney()">Start Journey</button>
+            <button class="button" onclick="openEncyclopedia()">Encyclopedia</button>
+          
+        </div>
+    </div>
+    
+    <script>
+    function startJourney() {
+        window.location.href = "index.html"; // Redirects to index.html in the same directory
+    }
+    
+    function openEncyclopedia() {
+        alert("Opening encyclopedia!");
+        window.location.href = "planets.html"
+        // Redirect to encyclopedia page or add encyclopedia functionality here
+    }
+    
+    function exitPage() {
+    window.close(); // Go back to the previous page
+}
+</script>
+</body>
+</html>

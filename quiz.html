@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar System Quiz</title>
+    <style>
+        /* General styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #1e1e2e;
+            color: #f3f3f3;
+        }
+
+        .quiz-container {
+            background-color: #2a2a3d;
+            padding: 25px 35px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease;
+        }
+
+        .quiz-container:hover {
+            transform: scale(1.02);
+        }
+
+        /* Question text styling */
+        .question {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #eaeaea;
+        }
+
+        /* Options styling */
+        .options {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .options li {
+            margin: 10px 0;
+        }
+
+        .options label {
+            cursor: pointer;
+            padding: 10px 15px;
+            display: block;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+            background-color: #3b3b55;
+        }
+
+        .options input[type="radio"] {
+            display: none;
+        }
+
+        .options input[type="radio"]:checked + label {
+            background-color: #ff3e3e;
+            color: white;
+            font-weight: bold;
+        }
+
+        .options label:hover {
+            background-color: #4a4a6e;
+        }
+
+        /* Feedback text */
+        #feedback {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        /* Buttons styling */
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #ff4a4a;
+        }
+
+        button:focus {
+            outline: none;
+        }
+
+        /* Specific button colors */
+        button {
+            background-color: #ff3e3e;
+            color: #f3f3f3;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div id="question-container">
+            <p id="question-number">Question 1</p>
+            <p class="question" id="question"></p>
+            <ul class="options">
+                <li><input type="radio" name="option" id="optionA"><label for="optionA" id="labelA"></label></li>
+                <li><input type="radio" name="option" id="optionB"><label for="optionB" id="labelB"></label></li>
+                <li><input type="radio" name="option" id="optionC"><label for="optionC" id="labelC"></label></li>
+                <li><input type="radio" name="option" id="optionD"><label for="optionD" id="labelD"></label></li>
+            </ul>
+            <p id="feedback"></p>
+        </div>
+        <div id="controls">
+            <button onclick="previousQuestion()">Previous</button>
+            <button onclick="nextQuestion()">Next</button>
+            <button onclick="checkAnswer()">Check</button>
+            <button onclick="window.location.href='index.html'">Menu</button>
+        </div>
+        
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "How many planets are there in our solar system?",
+                options: ["7", "8", "9", "10"],
+                answer: "B"
+            },
+            {
+                question: "Which planet is closest to the Sun?",
+                options: ["Venus", "Earth", "Mercury", "Mars"],
+                answer: "C"
+            },
+            {
+                question: "What is the average surface temperature of Venus?",
+                options: ["-88°C", "465°C", "-145°C", "20°C"],
+                answer: "B"
+            },
+            {
+                question: "How many moons does Mars have?",
+                options: ["1", "2", "3", "None"],
+                answer: "B"
+            },
+            {
+                question: "Which planet is known for its prominent rings?",
+                options: ["Saturn", "Jupiter", "Uranus", "Neptune"],
+                answer: "A"
+            },
+            {
+                question: "What type of planet is Jupiter?",
+                options: ["Terrestrial", "Ice giant", "Gas giant", "Dwarf planet"],
+                answer: "C"
+            },
+            {
+                question: "Which planet has the longest day length (rotation period)?",
+                options: ["Mercury", "Venus", "Earth", "Jupiter"],
+                answer: "B"
+            },
+            {
+                question: "What planet is furthest from the sun?",
+                options: ["Uranus", "Saturn", "Mercury", "Neptune"],
+                answer: "D"
+            },
+            {
+                question: "What is the axial tilt of Earth?",
+                options: ["0°", "23.5°", "26.7°", "98°"],
+                answer: "B"
+            },
+            {
+                question: "Other than Earth, which planet has the highest habitability level.",
+                options: ["Mars", "Venus", "Saturn", "Mercury"],
+                answer: "A"
+            },
+            {
+                question: "What type of planet is Mars classified as?",
+                options: ["Gas giant", "Ice giant", "Terrestrial", "Dwarf planet"],
+                answer: "C"
+            },
+            {
+                question: "How many moons does Saturn have?",
+                options: ["27", "80", "83", "14"],
+                answer: "C"
+            },
+            {
+                question: "Which spacecraft was the first to fly by Uranus?",
+                options: ["Voyager 1", "Galileo", "Voyager 2", "Juno"],
+                answer: "C"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let selectedAnswers = Array(questions.length).fill(null); // Store user-selected answers
+
+        function displayQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById("question-number").innerText = `Question ${currentQuestion + 1}`;
+            document.getElementById("question").innerText = q.question;
+            document.getElementById("labelA").innerText = "A) " + q.options[0];
+            document.getElementById("labelB").innerText = "B) " + q.options[1];
+            document.getElementById("labelC").innerText = "C) " + q.options[2];
+            document.getElementById("labelD").innerText = "D) " + q.options[3];
+            document.getElementById("feedback").innerText = "";
+
+            // Reset the options and show previously selected answer if available
+            document.querySelectorAll("input[name='option']").forEach(option => option.checked = false);
+            const previouslySelected = selectedAnswers[currentQuestion];
+            if (previouslySelected) {
+                document.getElementById(`option${previouslySelected}`).checked = true;
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                displayQuestion();
+            } else {
+                showFinalScore();
+            }
+        }
+
+        function checkAnswer() {
+            const q = questions[currentQuestion];
+            const userAnswer = document.querySelector("input[name='option']:checked");
+
+            if (userAnswer) {
+                const answerLetter = userAnswer.id[userAnswer.id.length - 1]; // Get A, B, C, or D
+                selectedAnswers[currentQuestion] = answerLetter; // Save the selected answer
+
+                if (answerLetter === q.answer) {
+                    document.getElementById("feedback").innerText = "Correct!";
+                } else {
+                    document.getElementById("feedback").innerText = `Wrong! The correct answer is ${q.answer}) ${q.options[q.answer.charCodeAt(0) - 65]}.`;
+                }
+            } else {
+                document.getElementById("feedback").innerText = "Please select an option.";
+            }
+        }
+
+        function menu() {
+            alert("Returning to menu..."); // Can redirect to menu or home page here
+        }
+
+        function showFinalScore() {
+            // Calculate the final score by comparing selected answers to correct answers
+            const score = selectedAnswers.reduce((total, answer, index) => {
+                return answer === questions[index].answer ? total + 1 : total;
+            }, 0);
+
+            // Display the final score
+            document.getElementById("question-container").innerHTML = `
+                <h2>Quiz Completed!</h2>
+                <p>Your score: ${score} out of ${questions.length}</p>
+            `;
+            document.getElementById("controls").style.display = "none"; // Hide controls after quiz completion
+        }
+
+        // Initialize first question display
+        displayQuestion();
+    </script>
+</body>
+</html>

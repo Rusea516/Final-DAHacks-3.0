@@ -1,0 +1,603 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <title>3D Solar System UI</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+
+    <style>
+        :root {
+    --accent-light: #90d5f5;
+    --secondary-color: #617eae;
+    --text-color: #fff;
+    --cards-color: #111115;
+    --shadow-color: #0117C6;
+    --progress-bg: #5A5354;
+}
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+        }
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 5px;
+            border-radius: 5px;
+            pointer-events: none;
+            display: none;
+        }
+        #quizButton, #pauseButton, #resumeButton, #daynightButton {
+            position: fixed;
+            bottom: 20px;
+            padding: 10px 20px;
+            background: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        
+        #speedSlider {
+            position: fixed;
+            bottom: 20px; /* Adjust distance from the bottom as needed */
+            left: 30%; /* Center horizontally */
+            transform: translateX(-50%); /* Offset by half its width to center exactly */
+            z-index: 100; /* Ensure it stays above other elements */
+        }
+        #daynightButton {left: 50%;}
+        #quizButton { left: 20px; }
+        #pauseButton { right: 140px; }
+        #resumeButton { right: 20px; }
+        .menu {
+            position: fixed;
+            top: 60px; /* Creates some space from the Toggle Menu button */
+            left: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            padding: 15px; /* Adds padding within the menu container */
+            display: none;
+        }
+        
+        .menu-item {
+            position: relative;
+            cursor: pointer;
+            padding: 8px 15px; /* Adds padding within each menu item */
+            color: burlywood;
+            size:100px;
+            margin-bottom: 10px; /* Space between each menu item */
+        }
+        .dropdown {
+            display: none;
+            position: absolute;
+            left: 0;
+            top: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 5px;
+            margin-top: 5px;
+            z-index: 10;
+        }
+        .dropdown-item {
+            padding: 5px 15px; /* Adds padding within each dropdown item */
+            color: #fff;
+        }
+        .menu-item:hover .dropdown {
+            display: block;
+        }
+        #menuButton {
+            position: fixed;
+            top: 40px;
+            left: 20px;
+            padding: 10px;
+            background: #555;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-content {
+  background: #1c1e24;
+  border: 2px solid var(--secondary-color);
+  border-radius: 15px;
+  width: 90%;
+  max-width: 800px;
+  padding: 30px;
+  color: #fff;
+  text-align: left;
+  position: relative;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.4s ease-out;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--secondary-color);
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  font-size: 1.5em;
+  color: var(--accent-light);
+}
+
+
+    .close-btn {
+  font-size: 24px;
+  color: var(--accent-light);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.close-btn:hover {
+  transform: scale(1.1);
+}
+
+
+.section {
+  border-top: 1px solid var(--secondary-color);
+  padding-top: 10px;
+  margin-top: 20px;
+}
+
+.section:first-child {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.section-title {
+  font-weight: bold;
+  color: var(--accent-light);
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+
+    .info-label {
+      display: inline-block;
+      width: 120px;
+      font-weight: bold;
+      color: var(--secondary-color);
+    }
+
+    .info-label {
+  display: inline-block;
+  width: 120px;
+  font-weight: bold;
+  color: var(--secondary-color);
+}
+
+.progress-bar {
+  background: var(--progress-bg);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 5px;
+}
+
+.progress {
+  height: 10px;
+  background: var(--accent-light);
+}
+    #meteorShowerButton {
+        top:50%;
+        left:20px;
+    }
+    /* Add styling for the Play Audio button */
+    #audioToggleButton {
+            position: fixed;
+            bottom: 80px; /* Adjust position to fit with other buttons */
+            left: 20px;
+            padding: 10px 20px;
+            background: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+    #playAudioButton {
+            position: fixed;
+            bottom: 80px; /* Adjust position to fit with other buttons */
+            left: 20px;
+            padding: 10px 20px;
+            background: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+
+
+
+    </style>
+</head>
+<body>
+    
+    
+    <!-- The Sun Modal -->
+  <div id="sunModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span>Solar Profile: The Sun</span>
+        <span class="close-btn" onclick="closeModal('sunModal')">&times;</span>
+      </div>
+
+      <div class="section">
+        <div class="section-title">BASICS</div>
+        <p><span class="info-label">Type:</span> Star</p>
+        <p><span class="info-label">Mass:</span> 1.989 x 10<sup>30</sup> kg</p>
+        <p><span class="info-label">Radius:</span> 696,340 km</p>
+        <p><span class="info-label">Temperature:</span> 5,500°C</p>
+      </div>
+
+      <div class="section">
+        <div class="section-title">CHARACTERISTICS</div>
+        <p><span class="info-label">Age:</span> 4.6 billion years</p>
+        <p><span class="info-label">Composition:</span> Hydrogen, Helium</p>
+      </div>
+
+      <div class="section">
+        <div class="section-title">STATS</div>
+        <p><span class="info-label">Strength:</span></p>
+        <div class="progress-bar"><div class="progress" style="width: 95%;"></div></div>
+        <p><span class="info-label">Radiance:</span></p>
+        <div class="progress-bar"><div class="progress" style="width: 90%;"></div></div>
+        <p><span class="info-label">Gravity:</span></p>
+        <div class="progress-bar"><div class="progress" style="width: 85%;"></div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">FUN FACT</div>
+        <p>The Sun accounts for about 99.86% of the total mass of the Solar System!</p>
+      </div>
+    </div>
+  </div>
+    <!-- Mercury Modal -->
+    <div id="mercuryModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <span>Planet Profile: Mercury</span>
+          <span class="close-btn" onclick="closeModal('mercuryModal')">&times;</span>
+        </div>
+        <div class="section">
+          <div class="section-title">BASICS</div>
+          <p><span class="info-label">Type:</span> Rocky Planet</p>
+          <p><span class="info-label">Mass:</span> 3.285 x 10<sup>23</sup> kg</p>
+          <p><span class="info-label">Radius:</span> 2,439.7 km</p>
+          <p><span class="info-label">Distance from Sun:</span> 57.9 million km</p>
+        </div>
+        <div class="section">
+          <div class="section-title">CHARACTERISTICS</div>
+          <p><span class="info-label">Surface Temperature:</span> -173 to 427°C</p>
+          <p><span class="info-label">Orbital Period:</span> 88 days</p>
+        </div>
+        <div class="section">
+          <div class="section-title">STATS</div>
+          <p><span class="info-label">Surface Gravity:</span></p>
+          <div class="progress-bar"><div class="progress" style="width: 38%;"></div></div>
+          <p><span class="info-label">Magnetic Field:</span></p>
+          <div class="progress-bar"><div class="progress" style="width: 25%;"></div></div>
+        </div>
+        <div class="section">
+          <div class="section-title">FUN FACT</div>
+          <p>Mercury has no atmosphere to retain heat, making it both extremely hot and cold.</p>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Venus Modal -->
+    <div id="venusModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <span>Planet Profile: Venus</span>
+          <span class="close-btn" onclick="closeModal('venusModal')">&times;</span>
+        </div>
+        <div class="section">
+          <div class="section-title">BASICS</div>
+          <p><span class="info-label">Type:</span> Rocky Planet</p>
+          <p><span class="info-label">Mass:</span> 4.867 x 10<sup>24</sup> kg</p>
+          <p><span class="info-label">Radius:</span> 6,051.8 km</p>
+          <p><span class="info-label">Distance from Sun:</span> 108.2 million km</p>
+        </div>
+        <div class="section">
+          <div class="section-title">CHARACTERISTICS</div>
+          <p><span class="info-label">Surface Temperature:</span> 462°C</p>
+          <p><span class="info-label">Atmosphere:</span> Thick clouds of sulfuric acid</p>
+        </div>
+        <div class="section">
+          <div class="section-title">STATS</div>
+          <p><span class="info-label">Surface Pressure:</span></p>
+          <div class="progress-bar"><div class="progress" style="width: 90%;"></div></div>
+          <p><span class="info-label">Visibility:</span></p>
+          <div class="progress-bar"><div class="progress" style="width: 50%;"></div></div>
+        </div>
+        <div class="section">
+          <div class="section-title">FUN FACT</div>
+          <p>Venus has a thick atmosphere that traps heat, making it the hottest planet in our solar system!</p>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Earth Modal -->
+    <div id="earthModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <span>Planet Profile: Earth</span>
+          <span class="close-btn" onclick="closeModal('earthModal')">&times;</span>
+        </div>
+        <div class="section">
+          <div class="section-title">BASICS</div>
+          <p><span class="info-label">Type:</span> Rocky Planet</p>
+          <p><span class="info-label">Mass:</span> 5.972 x 10<sup>24</sup> kg</p>
+          <p><span class="info-label">Radius:</span> 6,371 km</p>
+          <p><span class="info-label">Distance from Sun:</span> 149.6 million km</p>
+        </div>
+        <div class="section">
+          <div class="section-title">CHARACTERISTICS</div>
+          <p><span class="info-label">Atmosphere:</span> 78% Nitrogen, 21% Oxygen</p>
+          <p><span class="info-label">Surface Temperature:</span> -88 to 58°C</p>
+        </div>
+        <div class="section">
+          <div class="section-title">STATS</div>
+          <p><span class="info-label">Life Support:</span></p>
+          <div class="progress-bar"><div class="progress" style="width: 100%;"></div></div>
+          <p><span class="info-label">Water Presence:</span></p>
+          <div class="progress-bar"><div class="progress" style="width: 70%;"></div></div>
+        </div>
+        <div class="section">
+          <div class="section-title">FUN FACT</div>
+          <p>Earth is the only known planet to support life and has an atmosphere rich in oxygen.</p>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Mars Modal -->
+    <div id="marsModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <span>Planet Profile: Mars</span>
+          <span class="close-btn" onclick="closeModal('marsModal')">&times;</span>
+        </div>
+        <div class="section">
+          <div class="section-title">BASICS</div>
+          <p><span class="info-label">Type:</span> Rocky Planet</p>
+          <p><span class="info-label">Mass:</span> 6.39 x 10<sup>23</sup> kg</p>
+          <p><span class="info-label">Radius:</span> 3,389.5 km</p>
+          <p><span class="info-label">Distance from Sun:</span> 227.9 million km</p>
+        </div>
+        <div class="section">
+          <div class="section-title">CHARACTERISTICS</div>
+          <p><span class="info-label">Surface Temperature:</span> -87 to -5°C</p>
+          <p><span class="info-label">Surface Composition:</span> Iron oxide gives Mars its red color.</p>
+        </div>
+        <div class="section">
+          <div class="section-title">STATS</div>
+          <p><span class="info-label">Habitability:</span></p>
+          <div class="progress-bar"><div class="progress" style="width: 30%;"></div></div>
+          <p><span class="info-label">Atmosphere Density:</span></p>
+          <div class="progress-bar"><div class="progress" style="width: 10%;"></div></div>
+        </div>
+        <div class="section">
+          <div class="section-title">FUN FACT</div>
+          <p>Mars is known as the "Red Planet" due to its reddish appearance caused by iron oxide on its surface.</p>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Jupiter Modal -->
+    <div id="jupiterModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <span>Planet Profile: Jupiter</span>
+          <span class="close-btn" onclick="closeModal('jupiterModal')">&times;</span>
+        </div>
+        <div class="section">
+          <div class="section-title">BASICS</div>
+          <p><span class="info-label">Type:</span> Gas Giant</p>
+          <p><span class="info-label">Mass:</span> 1.898 x 10<sup>27</sup> kg</p>
+          <p><span class="info-label">Radius:</span> 69,911 km</p>
+          <p><span class="info-label">Distance from Sun:</span> 778.5 million km</p>
+        </div>
+        <div class="section">
+          <div class="section-title">CHARACTERISTICS</div>
+          <p><span class="info-label">Great Red Spot:</span> Massive storm raging for over 400 years</p>
+          <p><span class="info-label">Atmosphere:</span> Mostly hydrogen and helium</p>
+        </div>
+        <div class="section">
+          <div class="section-title">STATS</div>
+          <p><span class="info-label">Magnetic Field:</span></p>
+          <div class="progress-bar"><div class="progress" style="width: 95%;"></div></div>
+          <p><span class="info-label">Size:</span></p>
+          <div class="progress-bar"><div class="progress" style="width: 100%;"></div></div>
+        </div>
+        <div class="section">
+          <div class="section-title">FUN FACT</div>
+          <p>Jupiter's Great Red Spot is a storm that has lasted for at least 400 years and could fit Earth inside it.</p>
+        </div>
+      </div>
+    </div>
+  
+      <!-- Saturn Modal -->
+  <div id="saturnModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span>Planet Profile: Saturn</span>
+        <span class="close-btn" onclick="closeModal('saturnModal')">&times;</span>
+      </div>
+      <div class="section">
+        <div class="section-title">BASICS</div>
+        <p><span class="info-label">Type:</span> Gas Giant</p>
+        <p><span class="info-label">Mass:</span> 5.683 x 10<sup>26</sup> kg</p>
+        <p><span class="info-label">Radius:</span> 58,232 km</p>
+        <p><span class="info-label">Distance from Sun:</span> 1.4 billion km</p>
+      </div>
+      <div class="section">
+        <div class="section-title">CHARACTERISTICS</div>
+        <p><span class="info-label">Ring System:</span> Composed of ice and rock particles</p>
+        <p><span class="info-label">Atmosphere:</span> Primarily hydrogen and helium</p>
+      </div>
+      <div class="section">
+        <div class="section-title">STATS</div>
+        <p><span class="info-label">Ring Visibility:</span></p>
+        <div class="progress-bar"><div class="progress" style="width: 90%;"></div></div>
+        <p><span class="info-label">Magnetic Field:</span></p>
+        <div class="progress-bar"><div class="progress" style="width: 80%;"></div></div>
+      </div>
+      <div class="section">
+        <div class="section-title">FUN FACT</div>
+        <p>Saturn's rings are the most extensive and visible ring system in the Solar System.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Uranus Modal -->
+  <div id="uranusModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span>Planet Profile: Uranus</span>
+        <span class="close-btn" onclick="closeModal('uranusModal')">&times;</span>
+      </div>
+      <div class="section">
+        <div class="section-title">BASICS</div>
+        <p><span class="info-label">Type:</span> Ice Giant</p>
+        <p><span class="info-label">Mass:</span> 8.681 x 10<sup>25</sup> kg</p>
+        <p><span class="info-label">Radius:</span> 25,362 km</p>
+        <p><span class="info-label">Distance from Sun:</span> 2.9 billion km</p>
+      </div>
+      <div class="section">
+        <div class="section-title">CHARACTERISTICS</div>
+        <p><span class="info-label">Rotation:</span> Rotates on its side, unique among planets</p>
+        <p><span class="info-label">Atmosphere:</span> Hydrogen, helium, methane</p>
+      </div>
+      <div class="section">
+        <div class="section-title">STATS</div>
+        <p><span class="info-label">Axial Tilt:</span></p>
+        <div class="progress-bar"><div class="progress" style="width: 100%;"></div></div>
+        <p><span class="info-label">Atmosphere Density:</span></p>
+        <div class="progress-bar"><div class="progress" style="width: 30%;"></div></div>
+      </div>
+      <div class="section">
+        <div class="section-title">FUN FACT</div>
+        <p>Uranus is tilted on its side by about 98 degrees, making its rotation unique among planets.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Neptune Modal -->
+  <div id="neptuneModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span>Planet Profile: Neptune</span>
+        <span class="close-btn" onclick="closeModal('neptuneModal')">&times;</span>
+      </div>
+      <div class="section">
+        <div class="section-title">BASICS</div>
+        <p><span class="info-label">Type:</span> Ice Giant</p>
+        <p><span class="info-label">Mass:</span> 1.024 x 10<sup>26</sup> kg</p>
+        <p><span class="info-label">Radius:</span> 24,622 km</p>
+        <p><span class="info-label">Distance from Sun:</span> 4.5 billion km</p>
+      </div>
+      <div class="section">
+        <div class="section-title">CHARACTERISTICS</div>
+        <p><span class="info-label">Wind Speed:</span> Up to 2,100 km/h (1,300 mph)</p>
+        <p><span class="info-label">Atmosphere:</span> Hydrogen, helium, methane</p>
+      </div>
+      <div class="section">
+        <div class="section-title">STATS</div>
+        <p><span class="info-label">Wind Speed:</span></p>
+        <div class="progress-bar"><div class="progress" style="width: 100%;"></div></div>
+        <p><span class="info-label">Atmosphere Density:</span></p>
+        <div class="progress-bar"><div class="progress" style="width: 40%;"></div></div>
+      </div>
+      <div class="section">
+        <div class="section-title">FUN FACT</div>
+        <p>Neptune has the fastest winds in the Solar System, reaching speeds of up to 2,100 km/h.</p>
+      </div>
+    </div>
+  </div>
+    <div id="tooltip" class="tooltip"></div>
+    <button id="menuButton" onclick="toggleMenu()">Toggle Menu</button>
+    <div class="menu" id="menu">
+            <div class="menu-item" onclick="window.location.href='planets.html'">Encyclopedia</div>
+            <div class="menu-item" onclick="window.location.href='landingpage.html'">Go Back</div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal for planet information -->
+    <div id="planetModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="planetName"></h2>
+            <p id="planetInfo"></p>
+        </div>
+    </div>
+
+    <!-- Existing buttons -->
+    <button id="quizButton" onclick="window.location.href='quiz.html'">Take the Solar System Quiz!</button>
+    <button id="daynightButton" onclick="toggleDayNight()">Toggle Day/Night</button>
+    
+    <!-- New Pause and Resume buttons -->
+    <button id="pauseButton" onclick="pauseAnimation()">Pause</button>
+    <button id="resumeButton" onclick="resumeAnimation()">Resume</button>
+
+    
+    <!-- Add this button anywhere in your HTML file -->
+<button id="meteorShowerButton" style="position: absolute; top: 50%; left: 20px; z-index: 100; background: #333;
+            color: white;">
+    Start Meteor Shower
+</button>
+
+<button id="audioToggleButton" onclick="toggleAudio()">Play Audio</button>
+<audio id="audioPlayer" src="universe_sound.mp3"></audio>
+
+
+
+    <input type="range" min="0.5" max="2" value="1" step="0.1" id="speedSlider">
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="solarSystem.js"></script>
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById("menu");
+            menu.style.display = menu.style.display === "block" ? "none" : "block";
+        }
+        function toggleAudio() {
+            const audio = document.getElementById("audioPlayer");
+            const audioButton = document.getElementById("audioToggleButton");
+
+            if (audio.paused) {
+                audio.play();
+                audioButton.textContent = "Pause Audio";
+            } else {
+                audio.pause();
+                audioButton.textContent = "Play Audio";
+            }
+        }
+    </script>
+</body>
+</html>
